@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
+r"""
 daily_briefing.py — 麦当劳程序员创意开发大赛 · 每日战况简报（服务器版）
 
 部署（在服务器上执行）:
@@ -237,7 +237,7 @@ def main():
     if audit["status"] in ("passed", "failed") and state.get("audit") != audit["status"]:
         alert = True  # 状态跃迁 → 立即推送
 
-    if not force and not alert:
+    if not force and not alert and not dry:
         if now.hour != 10:
             log("非发送时段（北京 %02d 点），跳过" % now.hour)
             return 0
