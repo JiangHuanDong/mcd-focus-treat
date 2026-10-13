@@ -1,0 +1,19 @@
+# 凭证与本地状态 —— 绝不入库
+.env
+*.token
+*.secret
+.mcd_state/
+state.json
+sessions.json
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+
+# 系统
+.DS_Store
+Thumbs.db
+desktop.ini

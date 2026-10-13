@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>麦麦专注钟 · mcd-focus-treat</title>
+<meta name="description" content="专注换犒劳：专注计时 → 按饿度推荐奖励餐 → 券优化一键下单。麦当劳程序员创意开发大赛参赛作品。">
+<style>
+  :root{
+    --red:#DA291C; --yellow:#FFC72C; --ink:#3A2A25; --muted:#9A8A83;
+    --bg:#FFF8F4; --card:#FFFFFF; --line:#F0DFD6; --soft:#FFF1E8;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);
+    font-family:"PingFang SC","Microsoft YaHei",system-ui,-apple-system,sans-serif;
+    line-height:1.7;-webkit-font-smoothing:antialiased}
+  a{color:var(--red);text-decoration:none}
+  .wrap{max-width:960px;margin:0 auto;padding:0 24px}
+
+  /* Hero */
+  .hero{padding:72px 0 56px;text-align:center;
+    background:linear-gradient(180deg,#FFF1E8 0%,var(--bg) 100%)}
+  .contest-tag{display:inline-block;font-size:13px;color:var(--red);background:#fff;
+    border:1px solid var(--line);border-radius:999px;padding:6px 16px;margin-bottom:22px}
+  .hero h1{font-size:52px;letter-spacing:2px;margin-bottom:10px}
+  .hero h1 .dot{color:var(--red)}
+  .tagline{font-size:19px;color:var(--muted);margin-bottom:8px}
+  .sub{font-size:14px;color:var(--muted);margin-bottom:34px}
+  .btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+  .btn{display:inline-block;padding:13px 30px;border-radius:999px;font-size:16px;
+    border:2px solid var(--red);color:var(--red);background:#fff;transition:.2s;font-weight:600}
+  .btn:hover{background:#FFF1E8}
+  .btn.primary{background:var(--red);color:#fff}
+  .btn.primary:hover{background:#C21F14}
+
+  /* Sections */
+  section{padding:64px 0}
+  .sec-title{font-size:30px;text-align:center;margin-bottom:12px}
+  .sec-sub{text-align:center;color:var(--muted);font-size:15px;margin-bottom:44px}
+
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:26px 20px;text-align:center}
+  .card .num{width:34px;height:34px;line-height:34px;border-radius:50%;background:var(--yellow);
+    color:var(--ink);font-weight:700;margin:0 auto 14px;font-size:16px}
+  .card h3{font-size:17px;margin-bottom:8px}
+  .card p{font-size:13.5px;color:var(--muted);}
+
+  /* Demo */
+  .demo{background:#fff;border:1px solid var(--line);border-radius:22px;padding:36px;max-width:640px;margin:0 auto}
+  .demo .clock{font-size:64px;font-weight:700;text-align:center;color:var(--red);
+    font-variant-numeric:tabular-nums;letter-spacing:2px;margin:8px 0 4px}
+  .demo .state{text-align:center;color:var(--muted);font-size:14px;margin-bottom:22px;min-height:22px}
+  .demo .actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .chip{padding:9px 20px;border-radius:999px;border:1.5px solid var(--line);background:var(--soft);
+    font-size:14px;cursor:pointer;color:var(--ink);transition:.15s}
+  .chip:hover{border-color:var(--red);color:var(--red)}
+  .chip.on{background:var(--red);border-color:var(--red);color:#fff}
+  .demo .go{margin-top:18px;display:flex;gap:10px;justify-content:center}
+  .result{display:none;margin-top:24px;border-top:1px dashed var(--line);padding-top:22px}
+  .result.show{display:block}
+  .result .plan{background:var(--soft);border-radius:14px;padding:18px 20px;font-size:14.5px}
+  .result .plan b{font-size:16px}
+  .result .save{color:var(--red);font-weight:700}
+  .result .kcal{color:var(--muted);font-size:13px}
+
+  /* levels */
+  table{width:100%;border-collapse:collapse;background:#fff;border-radius:16px;overflow:hidden;
+    border:1px solid var(--line)}
+  th,td{padding:13px 18px;font-size:14.5px;text-align:left;border-bottom:1px solid var(--line)}
+  th{background:var(--soft);font-weight:600}
+  tr:last-child td{border-bottom:none}
+
+  .shot{text-align:center}
+  .shot img{max-width:760px;width:100%;border-radius:20px;border:1px solid var(--line);
+    box-shadow:0 18px 48px rgba(218,41,28,.10)}
+
+  footer{padding:44px 0 60px;text-align:center;color:var(--muted);font-size:13px}
+  footer .row{margin-top:8px}
+  footer a{color:var(--muted);text-decoration:underline}
+
+  @media (max-width:760px){
+    .hero h1{font-size:38px}
+    .grid{grid-template-columns:repeat(2,1fr)}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="contest-tag">麦当劳程序员创意开发大赛 · 参赛作品</div>
+    <h1>麦麦专注钟<span class="dot">.</span></h1>
+    <p class="tagline">专注换犒劳 —— 专注每一段，犒劳每一餐</p>
+    <p class="sub">Focus, then treat. 真实菜单 · 真实优惠券 · 官方价格试算 · 零依赖</p>
+    <div class="btns">
+      <a class="btn primary" href="https://github.com/JiangHuanDong/mcd-focus-treat" target="_blank" rel="noopener">GitHub 仓库</a>
+      <a class="btn" href="#demo">在线体验</a>
+    </div>
+  </div>
+</header>
+
+<section id="how">
+  <div class="wrap">
+    <h2 class="sec-title">它怎么工作</h2>
+    <p class="sec-sub">四步闭环：先专注，再犒劳，最后别忘了看一眼战报</p>
+    <div class="grid">
+      <div class="card"><div class="num">1</div><h3>开始专注</h3><p>一句话定好 25/45/90 分钟，<br>专注期间不打扰</p></div>
+      <div class="card"><div class="num">2</div><h3>到点结算</h3><p>按时长生成奖励档位，<br>不足 60% 记为放弃</p></div>
+      <div class="card"><div class="num">3</div><h3>奖励推荐</h3><p>真实菜单 + 券优化，<br>官方价格试算最优价</p></div>
+      <div class="card"><div class="num">4</div><h3>战报卡片</h3><p>段位升级，生成<br>可分享的专注战报</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="demo" style="background:#FFFDFB">
+  <div class="wrap">
+    <h2 class="sec-title">在线体验</h2>
+    <p class="sec-sub">试试专注计时器（网页演示版；命令行完整版见 GitHub 仓库）</p>
+    <div class="demo">
+      <div class="clock" id="clock">45:00</div>
+      <div class="state" id="state">选择时长，然后开始专注</div>
+      <div class="actions" id="chips">
+        <button class="chip" data-min="25">25 分钟</button>
+        <button class="chip on" data-min="45">45 分钟</button>
+        <button class="chip" data-min="90">90 分钟</button>
+        <button class="chip" data-min="0.1">10 秒演示</button>
+      </div>
+      <div class="go">
+        <button class="btn primary" id="startBtn" style="padding:11px 34px;font-size:15px">开始专注</button>
+        <button class="btn" id="stopBtn" style="padding:11px 34px;font-size:15px;display:none">结束并结算</button>
+      </div>
+
+      <div class="result" id="result">
+        <div class="plan">
+          <div style="color:#9A8A83;font-size:13px;margin-bottom:6px">本次专注奖励方案（示例）</div>
+          <b id="rTitle">标准档 · 巨无霸 ×1</b><br>
+          <span id="rDetail">原价 ¥26.50 → 实付 ¥26.50</span><br>
+          <span class="save" id="rSave"></span>
+          <div class="kcal" id="rKcal"></div>
+        </div>
+        <p style="font-size:12.5px;color:#9A8A83;margin-top:12px">
+          演示数据为真实运行样例；完整版会连接麦当劳官方 MCP 返回你附近门店的实时菜单与真实优惠券。
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2 class="sec-title">段位体系</h2>
+    <p class="sec-sub">专注越多，段位越高</p>
+    <table>
+      <tr><th>段位</th><th>累计专注</th><th>备注</th></tr>
+      <tr><td>见习麦苗</td><td>&lt; 5 小时</td><td>万事开头难</td></tr>
+      <tr><td>铜牌薯条</td><td>5 – 20 小时</td><td>习惯开始成形</td></tr>
+      <tr><td>白银麦辣</td><td>20 – 50 小时</td><td>已进入状态</td></tr>
+      <tr><td>黄金巨无霸</td><td>50 – 100 小时</td><td>深度工作者</td></tr>
+      <tr><td>铂金麦门</td><td>100 – 200 小时</td><td>自律的代表</td></tr>
+      <tr><td>麦门大师</td><td>200 小时 +</td><td>传说中的存在</td></tr>
+    </table>
+  </div>
+</section>
+
+<section style="background:#FFFDFB">
+  <div class="wrap shot">
+    <h2 class="sec-title">战报卡片</h2>
+    <p class="sec-sub">一键生成，发群、发朋友圈都很有面</p>
+    <img src="assets/report-card.png" alt="麦麦专注战报卡片示例">
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>麦麦专注钟 · mcd-focus-treat —— 由 WorkBuddy 智能体开发</div>
+    <div class="row">麦当劳程序员创意开发大赛参赛作品 · 非麦当劳官方产品 · 价格与供应以官方实时结果为准</div>
+    <div class="row"><a href="https://github.com/JiangHuanDong/mcd-focus-treat" target="_blank" rel="noopener">GitHub 仓库</a> · MIT License</div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var clock=document.getElementById('clock'),state=document.getElementById('state');
+  var startBtn=document.getElementById('startBtn'),stopBtn=document.getElementById('stopBtn');
+  var result=document.getElementById('result');
+  var minutes=45,timer=null,endAt=0;
+
+  var samples=[
+    {t:'标准档 · 巨无霸 ×1',d:'原价 ¥26.50 → 实付 ¥26.50',s:'',k:'参考热量约 513 kcal'},
+    {t:'小食档 · 麦咖啡™美式 + 风味酱',d:'原价 ¥22.00 → 实付 ¥12.90',s:'共省 ¥9.10（用了「9.9元中杯冰美式」券）',k:'参考热量约 40 kcal'},
+    {t:'豪华档 · 燕麦奶 + 牛奶',d:'原价 ¥40.00 → 实付 ¥30.50',s:'共省 ¥9.50（自动触发店内「第二杯半价」）',k:'参考热量约 328 kcal'}
+  ];
+
+  function fmt(sec){
+    sec=Math.max(0,Math.round(sec));
+    var m=Math.floor(sec/60),s=sec%60;
+    return (m<10?'0':'')+m+':'+(s<10?'0':'')+s;
+  }
+  function render(){ clock.textContent=fmt((endAt-Date.now())/1000); }
+
+  document.querySelectorAll('#chips .chip').forEach(function(ch){
+    ch.addEventListener('click',function(){
+      if(timer) return;
+      document.querySelectorAll('#chips .chip').forEach(function(c){c.classList.remove('on')});
+      ch.classList.add('on');
+      minutes=parseFloat(ch.dataset.min);
+      endAt=Date.now()+minutes*60000;
+      render();
+      state.textContent='已选择 '+(minutes<1?'10 秒演示':minutes+' 分钟')+'，点「开始专注」';
+    });
+  });
+
+  startBtn.addEventListener('click',function(){
+    if(timer) return;
+    result.classList.remove('show');
+    endAt=Date.now()+minutes*60000;
+    startBtn.style.display='none'; stopBtn.style.display='inline-block';
+    state.textContent='专注中……别看手机，专心干活';
+    timer=setInterval(function(){
+      var left=(endAt-Date.now())/1000;
+      render();
+      if(left<=0){ finish(true); }
+    },200);
+  });
+
+  stopBtn.addEventListener('click',function(){ finish(false); });
+
+  function finish(auto){
+    clearInterval(timer); timer=null;
+    startBtn.style.display='inline-block'; stopBtn.style.display='none';
+    clock.textContent='00:00';
+    state.textContent=auto?'到点啦，犒劳一下自己':'已结算';
+    var s=samples[minutes<1?1:Math.min(2,samples.length-1)];
+    document.getElementById('rTitle').textContent=s.t;
+    document.getElementById('rDetail').textContent=s.d;
+    document.getElementById('rSave').textContent=s.s;
+    document.getElementById('rKcal').textContent=s.k;
+    result.classList.add('show');
+    clock.textContent=fmt(minutes*60);
+  }
+
+  endAt=Date.now()+minutes*60000; render();
+})();
+</script>
+</body>
+</html>
